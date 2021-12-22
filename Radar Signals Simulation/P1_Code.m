@@ -1,6 +1,6 @@
-%function x = Frank_Code()
+%function x = P1_Code()
 %myFun - Description
-%This code is for generating Frank Code. 
+%This code is for generating P1 Code. 
 % Syntax: x = Frank_Code()
 %
 % Long description
@@ -13,14 +13,13 @@ fc = fs/6 + rand*(fs/5-fs/6);            %carrier frequency
 M = randi(3)+5;                          %random # of code phases                     
 A = 1;                                   %Amplitude
 SAR = ceil(fs/fc);                       %sampling ratio
-N = 512+randi(1920-512);                 %rand length of signal
-P = fix(N/(M*M*SAR));                    %periods of code
-
+N = 512 + randi(1920-512);               %length of samples
+P = fix(N/(M*M*SAR));                    %periods of codes
 
 %Generating the phase matrix
 for i = 1:M
     for j = 1:M
-        phi(i,j)=2*pi/M*(i-1)*(j-1);        
+        phi(i,j)=-pi/M*[M-(2*j-1)]*[(j-1)*M+(i-1)];        
     end    
 end
 
@@ -36,14 +35,13 @@ for i = 1:M
     end    
 end
 
-%total P periods of subcode
-temp1 = I;I=[];
-temp2 = Q;Q=[];
-for i =1:P
-    I=[I temp1];
-    Q=[Q temp2];
-end
 
+temp1 = I; I=[];
+temp2 = Q; Q=[];
+for i =1:P
+    I =[I temp1];
+    Q =[Q temp2];
+end
 
 t = 0:Ts:P*M*M*SAR*Ts-Ts;                    %setup time vector
 
@@ -59,6 +57,7 @@ set(get(gca, 'Title'), 'String', 'Phase Shift Signal');
 set(get(gca, 'XLabel'), 'String', 'Time/us');
 set(get(gca, 'YLabel'), 'String', 'Amplitude');
 
+
 figure(2);
 nn = 0;
 for ii=1:M
@@ -69,9 +68,9 @@ for ii=1:M
 end
 xx = 0:length(phi2)-1;
 stairs(xx,phi2);grid;
-set(get(gca, 'Title'), 'String', 'Frank Phase Code');
+set(get(gca, 'Title'), 'String', 'P1 Phase Code');
 xlabel('i - index for phase change');
-set(get(gca, 'YLabel'), 'String', 'Frank Phase shift');
+set(get(gca, 'YLabel'), 'String', 'P1 Phase shift');
 
 figure(3);
 periodogram(S);
@@ -81,6 +80,6 @@ set(get(gca, 'Title'), 'String', 'Periodogram of Modulated Signal');
 
 sprintf('The number of code phases is %g', M)
 sprintf('The carrier frequency is %g', fc)
-sprintf('The number of samples is %g', N)
+sprintf('The number of samples is %g', P*M*M*SAR)
 %end
 
